@@ -358,10 +358,13 @@ Current verified results:
 | Check | Result |
 |---|---:|
 | Domain tests | 5 passed |
-| Integration tests | 11 passed |
+| Integration tests | 14 passed |
 | Live health endpoint | HTTP 200 |
 | Live calculator smoke tests | Passed |
 | SQL-seeded tip endpoint | Passed |
+| Live register/login/refresh/logout flow | Passed |
+| Live SQL expense CRUD and persistence | Passed |
+| Live feedback SQL write | Passed |
 | Lighthouse Performance | 99 |
 | Lighthouse Accessibility | 100 |
 | Lighthouse Best Practices | 100 |
@@ -378,6 +381,7 @@ The final audit recorded a **1.7 s LCP**, **40 ms total blocking time**, and **0
 - A production deployment can run only after CI succeeds, or through an authorized manual workflow dispatch.
 - MonsterASP credentials are read from the protected `production` GitHub environment and are never committed.
 - Each deployment ends with an HTTPS `/health` verification.
+- A scheduled production monitor checks availability, database-backed reference data, and security headers every 30 minutes.
 
 See the complete [production operations guide](./docs/OPERATIONS.md), including the one-time GitHub environment configuration.
 

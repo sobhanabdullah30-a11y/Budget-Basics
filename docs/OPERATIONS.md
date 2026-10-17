@@ -69,7 +69,21 @@ Only HTTPS CDN origins without query strings or fragments pass startup validatio
 
 ## Monitoring and recovery
 
-- Uptime monitoring should request `/health` over HTTPS.
+- `.github/workflows/production-monitor.yml` checks production every 30 minutes and can also be run manually. It verifies `/health`, the homepage, database-backed learning-tip data, HSTS, CSP, and MIME-sniffing protection. A failed run appears in GitHub Actions and uses the repository owner's normal Actions notification settings.
+- The application must return `Healthy` from `/health` over HTTPS before and after each deployment.
 - Preserve IIS/application logs without recording tokens, cookies, connection strings, or submitted financial values.
-- Keep automatic SQL Server backups with a tested restore procedure.
+- MonsterASP keeps provider disaster-recovery copies, but application owners must also create their own database backups. Before a schema change, open **Databases → the BudgetBasics database → Backups → Create BAK file**, wait for completion, and download the `.bak` file to encrypted/off-site storage.
+- Perform a quarterly restore drill against a separate non-production database. Upload the `.bak`, restore it with **Create a safety backup of the current data first** enabled, start a temporary application against that restored database, and verify the Identity, `Expenses`, `FeedbackSubmissions`, `RefreshTokens`, `LearningTips`, and `VisitorStatistics` tables. Never restore a drill over production.
+- Record the backup filename, UTC creation time, file size, restore target, restore result, and tester in the release notes. A backup is not considered verified until this drill succeeds.
 - To roll back, redeploy a known-good Git tag or commit through the same production workflow.
+
+### Production verification completed 2026-10-17
+
+- Registration issued secure access and refresh cookies.
+- Refresh-token rotation returned HTTP 204.
+- The authenticated profile and expense API were accessible only while signed in.
+- Expense create, read, update, persistence across logout/login, and delete passed against production SQL Server.
+- Logout revoked the session; the protected endpoint returned HTTP 401 afterward.
+- A marked QA feedback submission was saved successfully.
+- BudgetBee returned an enhanced response, proving the configured server-side assistant integration was reachable without exposing its key.
+- JWT signing and SQL connection secrets were functionally verified by the successful token and persistence flows.

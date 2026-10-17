@@ -1,0 +1,53 @@
+name: Production monitor
+
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: budgetbasics-production-monitor
+  cancel-in-progress: true
+
+jobs:
+  smoke-test:
+    name: Verify live website
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check health, database-backed content, and security headers
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_url='https://budgetbasics-pk.runasp.net'
+
+          health_body="$(curl --fail --silent --show-error \
+            --retry 2 --retry-all-errors --connect-timeout 15 --max-time 30 \
+            "${base_url}/health")"
+          test "$health_body" = 'Healthy'
+
+          homepage_headers="$(mktemp)"
+          homepage_body="$(mktemp)"
+          trap 'rm -f "$homepage_headers" "$homepage_body"' EXIT
+          curl --fail --silent --show-error \
+            --retry 2 --retry-all-errors --connect-timeout 15 --max-time 30 \
+            --dump-header "$homepage_headers" --output "$homepage_body" \
+            "${base_url}/"
+
+          grep -q 'BudgetBasics' "$homepage_body"
+          grep -qi '^strict-transport-security:.*max-age=31536000' "$homepage_headers"
+          grep -qi '^content-security-policy:' "$homepage_headers"
+          grep -qi '^x-content-type-options: nosniff' "$homepage_headers"
+
+          tip_body="$(curl --fail --silent --show-error \
+            --retry 2 --retry-all-errors --connect-timeout 15 --max-time 30 \
+            "${base_url}/tools/student-tip?habit=saving")"
+          echo "$tip_body" | grep -q '"title"'
+          echo "$tip_body" | grep -q '"message"'
+
+      - name: Record monitored endpoint
+        run: echo 'Production checks passed for https://budgetbasics-pk.runasp.net'
