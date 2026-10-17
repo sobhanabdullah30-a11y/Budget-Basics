@@ -365,6 +365,7 @@ Current verified results:
 | Live register/login/refresh/logout flow | Passed |
 | Live SQL expense CRUD and persistence | Passed |
 | Live feedback SQL write | Passed |
+| Production backup verify + isolated restore drill | Passed |
 | Lighthouse Performance | 99 |
 | Lighthouse Accessibility | 100 |
 | Lighthouse Best Practices | 100 |

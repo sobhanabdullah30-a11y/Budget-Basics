@@ -75,6 +75,7 @@ Only HTTPS CDN origins without query strings or fragments pass startup validatio
 - MonsterASP keeps provider disaster-recovery copies, but application owners must also create their own database backups. Before a schema change, open **Databases → the BudgetBasics database → Backups → Create BAK file**, wait for completion, and download the `.bak` file to encrypted/off-site storage.
 - Perform a quarterly restore drill against a separate non-production database. Upload the `.bak`, restore it with **Create a safety backup of the current data first** enabled, start a temporary application against that restored database, and verify the Identity, `Expenses`, `FeedbackSubmissions`, `RefreshTokens`, `LearningTips`, and `VisitorStatistics` tables. Never restore a drill over production.
 - Record the backup filename, UTC creation time, file size, restore target, restore result, and tester in the release notes. A backup is not considered verified until this drill succeeds.
+- The 2026-10-17 production backup passed `RESTORE VERIFYONLY` and a complete isolated local staging restore. Evidence is recorded in [`BACKUP-VERIFICATION-2026-10-17.md`](./BACKUP-VERIFICATION-2026-10-17.md).
 - To roll back, redeploy a known-good Git tag or commit through the same production workflow.
 
 ### Production verification completed 2026-10-17
