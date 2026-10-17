@@ -1,0 +1,16 @@
+@model FeedbackInput
+@{ ViewData["Title"] = "Feedback"; }
+<form id="security-token" class="visually-hidden">@Html.AntiForgeryToken()</form>
+<section class="auth-shell"><article class="auth-card profile-card">
+    <span class="eyebrow">Feedback</span>
+    <h1>Help us improve BudgetBasics.</h1>
+    <form id="feedback-form" class="feedback-card feedback-page-form">
+        <label asp-for="Name"></label><input asp-for="Name" />
+        <label asp-for="Email"></label><input asp-for="Email" />
+        <label asp-for="Rating"></label><select asp-for="Rating"><option value="">Choose a rating</option><option value="5">5 - Excellent</option><option value="4">4 - Good</option><option value="3">3 - Okay</option><option value="2">2 - Needs work</option><option value="1">1 - Poor</option></select>
+        <label asp-for="Comments"></label><textarea asp-for="Comments" rows="5"></textarea>
+        <button class="btn btn-dark" type="submit">Submit feedback</button>
+        <p id="feedback-message" role="status"></p>
+        <small>Your feedback is stored securely in the BudgetBasics SQL Server database. Never include financial account details.</small>
+    </form>
+</article></section>

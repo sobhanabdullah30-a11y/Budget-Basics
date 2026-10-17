@@ -1,0 +1,15 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+appsettings.Local.json
+secrets.json
+.env
+publish/
+artifacts/
+*.publishSettings
+*.pubxml.user
+TestResults/
+tmp/
+src/BudgetBasics.Web/App_Data/DataProtection-Keys/

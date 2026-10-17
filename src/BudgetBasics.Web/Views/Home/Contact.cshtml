@@ -1,0 +1,23 @@
+@{ ViewData["Title"] = "Contact us"; }
+<section class="auth-shell"><article class="auth-card wide-card content-page">
+    <span class="eyebrow">Contact us</span>
+    <h1>We would like to hear from you.</h1>
+    <p>Questions about the learning material or this student project can be entered below. Contact messages are validated in your browser and are not stored; the feedback page provides a saved submission.</p>
+    <div class="contact-directory">
+        <div><strong>Project website</strong><a href="https://budgetbasics-pk.runasp.net/">budgetbasics-pk.runasp.net</a></div>
+        <div><strong>Project team</strong><span>BudgetBasics Student Development Team</span></div>
+        <div><strong>Email</strong><a href="#contact-form">Use the secure contact form below</a></div>
+        <div><strong>Phone</strong><span>Available on request</span></div>
+        <div><strong>Social sharing</strong><span class="social-links"><a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fbudgetbasics-pk.runasp.net%2F" target="_blank" rel="noopener noreferrer">LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></a><a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fbudgetbasics-pk.runasp.net%2F" target="_blank" rel="noopener noreferrer">Facebook<span class="visually-hidden"> (opens in a new tab)</span></a></span></div>
+    </div>
+    <form id="contact-form" class="feedback-card feedback-page-form" novalidate>
+        <h2>Contact form</h2>
+        <div class="form-pair"><label for="contact-name">Name<input id="contact-name" name="Name" minlength="2" maxlength="80" autocomplete="name" required /></label><label for="contact-email">Email<input id="contact-email" name="Email" type="email" maxlength="254" autocomplete="email" required /></label></div>
+        <label for="contact-subject">Subject<input id="contact-subject" name="Subject" minlength="3" maxlength="100" required /></label>
+        <label for="contact-body">Message<textarea id="contact-body" name="Message" minlength="10" maxlength="1000" rows="5" required></textarea></label>
+        <button class="btn btn-primary" type="submit">Validate message</button>
+        <p id="contact-message" class="form-status" role="status" aria-live="polite"></p>
+    </form>
+    <p><small>Do not send bank details, card numbers, passwords, or other sensitive financial information.</small></p>
+    <a class="btn btn-soft" asp-action="Feedback">Open saved feedback form</a>
+</article></section>

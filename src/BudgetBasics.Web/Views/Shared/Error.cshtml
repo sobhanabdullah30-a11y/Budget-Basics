@@ -1,0 +1,16 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<section class="auth-shell"><article class="auth-card profile-card content-page error-card">
+    <span class="error-symbol" aria-hidden="true">!</span>
+    <span class="eyebrow">Something went wrong</span>
+    <h1>We could not complete that request.</h1>
+    <p>Please return to the home page and try again. Your saved account data has not been changed.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="request-id"><strong>Reference:</strong> <code>@Model.RequestId</code></p>
+    }
+    <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Return home</a>
+</article></section>
