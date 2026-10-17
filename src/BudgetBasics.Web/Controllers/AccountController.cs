@@ -3,6 +3,7 @@ using BudgetBasics.Application.Common;
 using BudgetBasics.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace BudgetBasics.Web.Controllers;
 
@@ -14,6 +15,7 @@ public sealed class AccountController(IAuthenticationService authenticationServi
     public IActionResult Register() => View(new RegisterViewModel());
 
     [HttpPost]
+    [EnableRateLimiting("authentication")]
     public async Task<IActionResult> Register(RegisterViewModel model, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
@@ -46,6 +48,7 @@ public sealed class AccountController(IAuthenticationService authenticationServi
     }
 
     [HttpPost]
+    [EnableRateLimiting("authentication")]
     public async Task<IActionResult> Login(
         LoginViewModel model,
         string? returnUrl,
@@ -74,6 +77,7 @@ public sealed class AccountController(IAuthenticationService authenticationServi
     public IActionResult Profile() => View();
 
     [HttpPost]
+    [EnableRateLimiting("authentication")]
     public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
     {
         if (!Request.Cookies.TryGetValue("bb_refresh", out var refreshToken))

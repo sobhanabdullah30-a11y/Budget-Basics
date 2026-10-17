@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using BudgetBasics.Web.Models;
 using BudgetBasics.Application.Common;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace BudgetBasics.Web.Controllers;
 
@@ -27,22 +28,27 @@ public class HomeController(
         return View(new HomeViewModel(count));
     }
 
+    [OutputCache(PolicyName = "public-pages")]
     public IActionResult Privacy()
     {
         return View();
     }
 
+    [OutputCache(PolicyName = "public-pages")]
     public IActionResult Sitemap()
     {
         return View();
     }
 
+    [OutputCache(PolicyName = "public-pages")]
     public IActionResult About() => View();
 
+    [OutputCache(PolicyName = "public-pages")]
     public IActionResult Contact() => View();
 
     public IActionResult Feedback() => View(new FeedbackInput());
 
+    [OutputCache(PolicyName = "public-pages")]
     public IActionResult Disclaimer() => View();
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

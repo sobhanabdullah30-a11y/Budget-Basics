@@ -1,7 +1,13 @@
 <Project>
   <PropertyGroup>
     <AnalysisLevel>latest</AnalysisLevel>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <Deterministic>true</Deterministic>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/sobhanabdullah30-a11y/Budget-Basics</RepositoryUrl>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <VersionPrefix>1.1.0</VersionPrefix>
   </PropertyGroup>
 </Project>

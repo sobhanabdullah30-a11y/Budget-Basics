@@ -23,6 +23,7 @@ public sealed class ToolsController(
         ["all", "food", "transport", "impulse", "subscriptions", "saving"];
 
     [HttpPost("budget-split")]
+    [EnableRateLimiting("api")]
     public IActionResult BudgetSplit(BudgetSplitInput input)
     {
         if (!ModelState.IsValid || input.MonthlyIncome is null)
@@ -35,6 +36,7 @@ public sealed class ToolsController(
     }
 
     [HttpPost("savings-goal")]
+    [EnableRateLimiting("api")]
     public IActionResult SavingsGoal(SavingsGoalInput input)
     {
         if (!ModelState.IsValid || input.TargetAmount is null || input.CurrentSavings is null || input.MonthlyContribution is null)
@@ -71,6 +73,8 @@ public sealed class ToolsController(
     }
 
     [HttpGet("student-tip")]
+    [EnableRateLimiting("api")]
+    [Microsoft.AspNetCore.OutputCaching.OutputCache(PolicyName = "reference-data")]
     public async Task<IActionResult> StudentTip(
         [FromQuery] string? habit,
         CancellationToken cancellationToken)
@@ -95,6 +99,7 @@ public sealed class ToolsController(
 
     [Authorize(Policy = SecurityPolicies.AuthenticatedUser)]
     [HttpGet("expenses")]
+    [EnableRateLimiting("api")]
     public async Task<IActionResult> Expenses(CancellationToken cancellationToken)
     {
         var userId = RequireUserId();
@@ -104,6 +109,7 @@ public sealed class ToolsController(
 
     [Authorize(Policy = SecurityPolicies.AuthenticatedUser)]
     [HttpPost("expenses/save")]
+    [EnableRateLimiting("api")]
     public async Task<IActionResult> SaveExpense(
         ExpenseInput input,
         CancellationToken cancellationToken)
@@ -134,6 +140,7 @@ public sealed class ToolsController(
 
     [Authorize(Policy = SecurityPolicies.AuthenticatedUser)]
     [HttpPost("expenses/delete")]
+    [EnableRateLimiting("api")]
     public async Task<IActionResult> DeleteExpense(
         DeleteExpenseInput input,
         CancellationToken cancellationToken)
@@ -151,6 +158,7 @@ public sealed class ToolsController(
     }
 
     [HttpPost("feedback")]
+    [EnableRateLimiting("api")]
     public async Task<IActionResult> Feedback(
         FeedbackInput input,
         CancellationToken cancellationToken)

@@ -5,6 +5,8 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET_Core-MVC-5C2D91)](https://learn.microsoft.com/aspnet/core/mvc/)
 [![SQL Server](https://img.shields.io/badge/SQL_Server-EF_Core-CC2927?logo=microsoftsqlserver)](https://learn.microsoft.com/ef/core/)
+[![CI](https://github.com/sobhanabdullah30-a11y/Budget-Basics/actions/workflows/ci.yml/badge.svg)](https://github.com/sobhanabdullah30-a11y/Budget-Basics/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/sobhanabdullah30-a11y/Budget-Basics/actions/workflows/codeql.yml/badge.svg)](https://github.com/sobhanabdullah30-a11y/Budget-Basics/actions/workflows/codeql.yml)
 [![Live](https://img.shields.io/badge/MonsterASP-Live-138A64)](https://budgetbasics-pk.runasp.net/)
 [![Lighthouse](https://img.shields.io/badge/Lighthouse-99%20%7C%20100%20%7C%20100%20%7C%20100-success)](./docs/SRS-TRACEABILITY.md)
 
@@ -22,7 +24,9 @@ BudgetBasics is built with ASP.NET Core MVC, Razor Views, SQL Server, Entity Fra
 - [Setup and installation](#setup-and-installation)
 - [Database migrations and preseeded data](#database-migrations-and-preseeded-data)
 - [Testing and quality](#testing-and-quality)
+- [CI/CD and version control](#cicd-and-version-control)
 - [Deployment guide — MonsterASP.NET](#deployment-guide--monsteraspnet)
+- [Caching and CDN](#caching-and-cdn)
 - [Animations and special effects](#animations-and-special-effects)
 - [Security and configuration](#security-and-configuration)
 
@@ -59,7 +63,7 @@ Budget-Basics/
 └── dotnet-tools.json
 ```
 
-> No public GitHub remote is configured in this checkout. After creating the repository, set its URL with `git remote add origin <repository-url>`.
+**Public repository:** [github.com/sobhanabdullah30-a11y/Budget-Basics](https://github.com/sobhanabdullah30-a11y/Budget-Basics)
 
 ## Architecture
 
@@ -365,6 +369,18 @@ Current verified results:
 
 The final audit recorded a **1.7 s LCP**, **40 ms total blocking time**, and **0 cumulative layout shift**.
 
+## CI/CD and version control
+
+- `main` is the production branch and the source of deployable releases.
+- GitHub Actions restores locked dependencies, builds with warnings as errors, executes all automated tests, collects coverage, and creates an IIS-ready artifact.
+- CodeQL scans C# on pushes, pull requests, and a weekly schedule.
+- Dependabot monitors NuGet packages and GitHub Actions.
+- A production deployment can run only after CI succeeds, or through an authorized manual workflow dispatch.
+- MonsterASP credentials are read from the protected `production` GitHub environment and are never committed.
+- Each deployment ends with an HTTPS `/health` verification.
+
+See the complete [production operations guide](./docs/OPERATIONS.md), including the one-time GitHub environment configuration.
+
 ## Deployment guide — MonsterASP.NET
 
 ### Live production environment
@@ -420,6 +436,10 @@ dotnet publish .\src\BudgetBasics.Web\BudgetBasics.Web.csproj `
 
 Deploy that folder with Visual Studio Web Deploy or `msdeploy.exe` using credentials from a newly downloaded MonsterASP publish profile. Do not place the profile or its password in scripts committed to source control.
 
+### Deploy through GitHub Actions
+
+The [`Deploy to MonsterASP`](./.github/workflows/deploy-monsterasp.yml) workflow is ready for repeatable IIS Web Deploy. Add `MONSTER_PUBLISH_PASSWORD` to the GitHub `production` environment and set the repository variable `ENABLE_MONSTER_DEPLOY=true`. Automatic production deployment then runs only after the `CI` workflow succeeds on `main`.
+
 ### Post-deployment verification
 
 ```powershell
@@ -435,6 +455,16 @@ Also verify:
 - Calculator and feedback POST requests pass antiforgery validation.
 - No secrets or personal information appear in application logs.
 - A recent database backup or provider restore point is available before schema changes.
+
+## Caching and CDN
+
+- Public informational pages use ASP.NET Core output caching; authenticated responses are excluded by the framework and explicitly marked `no-store`.
+- Static CSS, JavaScript, images, and libraries receive fingerprinted URLs with a one-year immutable cache policy.
+- HTTPS responses use Brotli or Gzip compression.
+- `Cdn__Enabled` and `Cdn__BaseUrl` provide validated HTTPS asset-origin switching without code changes.
+- A real CDN remains disabled until a pull zone/custom domain is provisioned; this prevents broken assets and avoids pretending that application code alone creates CDN infrastructure.
+
+CDN activation and safe path rules are documented in [`docs/OPERATIONS.md`](./docs/OPERATIONS.md#cdn-activation).
 
 ## Animations and special effects
 
@@ -461,8 +491,8 @@ Effects rely primarily on `transform` and `opacity` to keep animation smooth. Th
 - Only refresh-token hashes are stored in SQL Server.
 - Cookies are `Secure`, `HttpOnly`, and constrained with `SameSite` and path settings.
 - All unsafe MVC requests require antiforgery tokens.
-- The application sends CSP, HSTS, `X-Content-Type-Options`, referrer and permissions policies.
-- Assistant requests are rate-limited and constrained to educational budgeting topics.
+- The application sends CSP, HSTS, clickjacking, MIME-sniffing, referrer, permissions, and cross-origin policies.
+- Global, authentication, API, and assistant limits return HTTP `429` with retry guidance.
 - EF Core provides parameterized SQL access and controlled migrations.
 - Data Protection keys persist outside source control for safe IIS restarts.
 - `.gitignore` excludes build outputs, local secrets, deployment credentials, test output and Data Protection keys.
@@ -473,6 +503,8 @@ Effects rely primarily on `transform` and `opacity` to keep animation smooth. Th
 - [SRS traceability checklist](./docs/SRS-TRACEABILITY.md)
 - [Implemented sitemap](./docs/SITEMAP-IMPLEMENTATION.md)
 - [Development roadmap](./docs/ROADMAP.md)
+- [CI/CD, IIS security, caching and CDN operations](./docs/OPERATIONS.md)
+- [Vulnerability reporting policy](./SECURITY.md)
 
 ---
 

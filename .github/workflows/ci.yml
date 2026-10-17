@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  Jwt__SigningKey: ci-only-signing-key-with-at-least-sixty-four-characters-1234567890
+  Database__ApplyMigrations: false
+
+jobs:
+  build-test:
+    name: Build, test, and package
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Restore dependencies
+        run: dotnet restore BudgetBasics.slnx --locked-mode
+
+      - name: Build release
+        run: dotnet build BudgetBasics.slnx --configuration Release --no-restore
+
+      - name: Run automated tests
+        run: dotnet test BudgetBasics.slnx --configuration Release --no-build --logger "trx;LogFileName=tests.trx" --results-directory TestResults --collect:"XPlat Code Coverage"
+
+      - name: Publish IIS artifact
+        run: dotnet publish src/BudgetBasics.Web/BudgetBasics.Web.csproj --configuration Release --no-build --output artifacts/web
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload deployable website
+        uses: actions/upload-artifact@v4
+        with:
+          name: budgetbasics-web-${{ github.sha }}
+          path: artifacts/web
+          if-no-files-found: error
+          retention-days: 14
